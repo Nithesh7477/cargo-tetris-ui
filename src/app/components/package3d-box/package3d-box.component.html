@@ -1,0 +1,15 @@
+<div class="relative w-full h-full flex flex-col items-center group">
+  <div
+    class="relative w-full h-full aspect-square overflow-hidden rounded shadow-lg border border-yellow-900"
+  >
+    <canvas
+      #boxCanvas
+      class="absolute left-0 top-0 w-full h-full"
+      style="display: block"
+    ></canvas>
+  </div>
+  <span
+    class="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/80 text-yellow-100 text-xs px-2 py-0.5 rounded font-semibold select-none pointer-events-none"
+    >{{ pkg.id }}</span
+  >
+</div>

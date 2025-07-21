@@ -1,0 +1,156 @@
+<div class="relative w-full h-full">
+  <!-- Add Button: Top-Left, floating -->
+  <button
+    class="absolute left-6 top-6 z-30 h-12 w-12 rounded-full border-2 border-blue-500 bg-blue-600 hover:bg-blue-700 text-white text-3xl font-bold shadow-lg"
+    (click)="addPackageAndScrollToEnd()"
+    [disabled]="packages.length >= 14"
+    aria-label="Add Package"
+  >
+    +
+  </button>
+  <!-- Execute Button: Top-Right, floating -->
+  <button
+    class="absolute right-6 top-6 z-30 h-12 w-12 rounded-full border-2 border-blue-500 bg-blue-600 hover:bg-blue-700 text-white text-2xl font-bold shadow-lg"
+    (click)="executeLoadPlan()"
+    aria-label="Execute Load Plan"
+  >
+    <span class="ml-1">▶</span>
+  </button>
+
+  <!-- ULD Label: Top-Center -->
+  <div
+    class="absolute top-10 left-1/2 -translate-x-1/2 z-30 bg-black/80 text-yellow-100 text-xs px-3 py-1 rounded font-semibold shadow-lg select-none pointer-events-none"
+  >
+    ULD: LD-1 AKC
+  </div>
+
+  <!-- 3D Canvas -->
+  <canvas
+    #canvas3d
+    class="w-full h-full rounded-t-xl shadow-xl ring-1 ring-black/10"
+  ></canvas>
+
+  <div
+    class="absolute left-0 bottom-0 w-full bg-gradient-to-t from-[#181e30ee] to-[#181e3000] py-6 px-12 flex items-end"
+    style="min-height: 220px; max-height: 320px"
+  >
+    <!-- Carousel Container, relative for arrows -->
+    <div class="relative w-full" style="min-height: 140px">
+      <!-- Left Arrow (only show if scroll possible) -->
+      <button
+        *ngIf="canScrollLeft"
+        (click)="scrollPackages('left')"
+        class="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-black/40 text-white opacity-30 hover:opacity-100 h-11 w-11 rounded-full flex items-center justify-center shadow-md transition-all"
+        style="pointer-events: auto"
+        aria-label="Scroll Left"
+      >
+        &#8592;
+      </button>
+
+      <!-- The Bar -->
+      <div
+        #pkgBar
+        class="flex gap-6 overflow-x-hidden scroll-smooth w-full px-20"
+        style="min-height: 176px"
+      >
+        <ng-container *ngFor="let pkg of packages; let i = index">
+          <div
+            #pkgItem
+            class="w-44 h-44 flex flex-col items-center shrink-0 relative"
+            (mouseenter)="highlightPackage(pkg.id)"
+            (mouseleave)="clearHighlight()"
+            (click)="selectedPackage = pkg; $event.stopPropagation()"
+          >
+            <button
+              type="button"
+              (click)="removePackage(i); $event.stopPropagation()"
+              aria-label="Remove package"
+              class="absolute top-1.5 right-1.5 z-30 text-xs opacity-25 hover:opacity-95 bg-white/80 rounded-full w-4 h-4 flex items-center justify-center shadow transition-all border border-gray-200 hover:bg-red-200 hover:text-red-700"
+              style="
+                pointer-events: auto;
+                font-size: 0.85rem;
+                padding: 0;
+                line-height: 1;
+                min-width: 16px;
+                min-height: 16px;
+              "
+              tabindex="0"
+            >
+              ✕
+            </button>
+            <app-package-3d-box
+              [pkg]="pkg"
+              class="w-40 h-40"
+            ></app-package-3d-box>
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- Right Arrow (only show if scroll possible) -->
+      <button
+        *ngIf="canScrollRight"
+        (click)="scrollPackages('right')"
+        class="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-black/40 text-white opacity-30 hover:opacity-100 h-11 w-11 rounded-full flex items-center justify-center shadow-md transition-all"
+        style="pointer-events: auto"
+        aria-label="Scroll Right"
+      >
+        &#8594;
+      </button>
+    </div>
+  </div>
+
+  <!-- Package Metadata Popup -->
+  <div
+    *ngIf="selectedPackage"
+    [ngStyle]="{
+      position: 'fixed',
+      top: '60%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      minWidth: '280px',
+      background: '#1e293b',
+      color: '#e2e8f0',
+      border: '2px solid #3b82f6',
+      borderRadius: '12px',
+      padding: '22px 30px',
+      boxShadow: '0 8px 24px #000000aa',
+      fontSize: '15px',
+      zIndex: 99999,
+    }"
+    (click)="$event.stopPropagation()"
+  >
+    <div
+      style="display: flex; justify-content: space-between; align-items: center"
+    >
+      <strong style="font-size: 18px; color: #93c5fd"
+        >📦 Package Details</strong
+      >
+      <button
+        (click)="selectedPackage = null"
+        style="
+          background: transparent;
+          border: none;
+          font-size: 20px;
+          color: #f87171;
+          cursor: pointer;
+        "
+      >
+        ×
+      </button>
+    </div>
+    <div style="margin-top: 10px; line-height: 1.6">
+      <div><strong>ID:</strong> {{ selectedPackage.id }}</div>
+      <div>
+        <strong>Size:</strong> {{ selectedPackage.length }} ×
+        {{ selectedPackage.width }} × {{ selectedPackage.height }} m
+      </div>
+      <div><strong>Volume:</strong> {{ selectedPackage.volume }} m³</div>
+      <div><strong>Weight:</strong> {{ selectedPackage.weight }} kg</div>
+      <div><strong>Priority:</strong> {{ selectedPackage.priority }}</div>
+      <div>
+        <strong>Delivery Order:</strong> {{ selectedPackage.deliveryOrder }}
+      </div>
+      <div><strong>Fragility:</strong> {{ selectedPackage.fragility }}</div>
+    </div>
+  </div>
+</div>
